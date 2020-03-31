@@ -195,4 +195,27 @@ class TriToTriStepView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : TriToTriStepView) {
+
+        private val animator : Animator = Animator(view)
+        private val ttt : TriToTriStep = TriToTriStep(0)
+        private val paint : Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+        fun render(canvas : Canvas) {
+            canvas.drawColor(backColor)
+            ttt.draw(canvas, paint)
+            animator.animate {
+                ttt.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            ttt.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
