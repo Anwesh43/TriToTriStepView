@@ -23,8 +23,8 @@ val foreColor : Int = Color.parseColor("#3F51B5")
 val backColor : Int = Color.parseColor("#BDBDBD")
 
 fun Int.inverse() : Float = 1f / this
-fun Float.divideScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
-fun Float.maxScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale(i, n)) * n
+fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
+fun Float.divideScale(i : Int, n : Int) : Float = Math.min(n.inverse(), maxScale(i, n)) * n
 fun Float.sinify() : Float = Math.sin(this * Math.PI).toFloat()
 
 
@@ -37,10 +37,13 @@ fun Canvas.drawTriOrLine(i : Int, x : Float, size : Float, gap : Float, scale : 
 
         for (j in 0..1) {
             val scij : Float = sci.divideScale(j, 2)
-            drawLine(j * gap / 2, j * -size, (gap / 2) * scij, -size * (1f - 2 * j) * scij, paint)
+            save()
+            translate(j * gap / 2, j * -size)
+            drawLine(0f, 0f, (gap / 2) * scij, -size * (1f - 2 * j) * scij, paint)
+            restore()
         }
     } else {
-        drawLine(0f, 0f, gap * sci, 0f, paint)
+        drawLine(0f, 0f, gap * sci * lineSizeFactor, 0f, paint)
     }
     restore()
 }
@@ -50,7 +53,11 @@ fun Canvas.drawTriToTriStep(scale : Float, w : Float, size : Float, paint : Pain
     var x : Float = 0f
     for (j in 0..tri) {
         drawTriOrLine(j, x, size, gap, scale, paint)
-        x += (j % 2) * lineSizeFactor * gap
+        if (j % 2 == 0) {
+            x += gap
+        } else {
+            x += gap * lineSizeFactor
+        }
     }
 }
 
